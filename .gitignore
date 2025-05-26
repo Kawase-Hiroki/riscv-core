@@ -1,0 +1,57 @@
+# Verilog simulation and synthesis generated files
+*.vcd
+*.vpd
+*.fsdb
+*.log
+*.jou
+*.wdb
+*.svf
+*.pb
+*.key
+*.tmp
+
+# Common build directories
+simv*
+csrc/
+work/
+*.vlog
+*.vo
+*.sv
+*.vhi
+*.vhf
+*.sdf
+*.psm
+
+# Synopsys / ModelSim / Vivado / Quartus / Icarus Verilog
+*.ini
+*.ucf
+*.edf
+*.qpf
+*.qsf
+*.syr
+*.lso
+*.xpr
+*.xise
+*.ncd
+*.ngc
+*.ngd
+*.bit
+*.bin
+*.mcs
+*.prj
+*.project
+*.run.xml
+*.sim
+*.backup.*
+*.bak
+*.restore
+*.xmsgs/
+*.ip_user_files/
+*.vivado/
+*.cache/
+*.hw/
+
+# Temporary or auto-generated
+*.swp
+*~
+*.bak
