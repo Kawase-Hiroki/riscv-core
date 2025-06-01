@@ -55,3 +55,5 @@ work/
 *.swp
 *~
 *.bak
+*a.out
+*/*.txt

@@ -26,15 +26,17 @@ module m_proc(w_clk);
     reg [31:0] r_pc = 0;
 
     //IF
+    reg [31:0] P1_ir = 32'h13, P1_pc = 0;
     assign w_pcin = (w_b & w_tkn) ? w_tcp : w_npc;
     assign w_npc = r_pc + 4;
     m_am_item m1 (r_pc, w_ir);
+    always @(posedge w_clk) {r_pc, P1_ir, P1_pc} <= {w_pcin, w_ir, w_npc};
 
     //ID
-    m_gen_imm m2 (w_ir, w_imm, w_r, w_i, w_s, w_b, w_u, w_j, w_ld);
-    m_RF m3 (w_clk, w_ir[19:15], w_ir[24:20], w_r1, w_r2, w_ir[11:7], !w_s & !w_b, w_rt);
+    m_gen_imm m2 (P1_ir, w_imm, w_r, w_i, w_s, w_b, w_u, w_j, w_ld);
+    m_RF m3 (w_clk, P1_ir[19:15], P1_ir[24:20], w_r1, w_r2, P1_ir[11:7], !w_s & !w_b, w_rt);
     assign w_s2 = (!w_r & !w_b) ? w_imm : w_r2;
-    assign w_tcp = r_pc + w_imm;
+    assign w_tcp = P1_pc + w_imm;
 
     //EX
     m_alu m5 (w_r1, w_s2, w_alu, w_tkn);
@@ -100,9 +102,8 @@ module m_am_dmem(w_clk, w_adr, w_we, w_wd, w_rd);
     `include "program.txt"
 endmodule
 
-module m_alu(w_in1, w_in2, w_op, w_out, w_tkn);
+module m_alu(w_in1, w_in2, w_out, w_tkn);
     input wire [31:0] w_in1, w_in2;
-    input wire w_op[2:1];
     output wire [31:0] w_out;
     output wire w_tkn;
     assign w_out = w_in1 + w_in2;
