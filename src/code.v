@@ -24,17 +24,20 @@ module m_proc(w_clk);
     wire w_r, w_i, w_s, w_b, w_u, w_j, w_ld;
     wire w_tkn;
     reg [31:0] r_pc = 0;
+    reg [31:0] P1_ir = 32'h13, P1_pc = 0;
+    reg P1_v = 0;
+    wire w_miss = w_b & w_tkn & P1_v;
 
     //IF
-    reg [31:0] P1_ir = 32'h13, P1_pc = 0;
-    assign w_pcin = (w_b & w_tkn) ? w_tcp : w_npc;
+    assign w_pcin = (w_miss) ? w_tcp : w_npc;
     assign w_npc = r_pc + 4;
     m_am_item m1 (r_pc, w_ir);
-    always @(posedge w_clk) {r_pc, P1_ir, P1_pc} <= {w_pcin, w_ir, w_npc};
+    always @(posedge w_clk) {r_pc, P1_ir, P1_pc, P1_v} <= {w_pcin, w_ir, w_npc, !w_miss};
 
     //ID
+
     m_gen_imm m2 (P1_ir, w_imm, w_r, w_i, w_s, w_b, w_u, w_j, w_ld);
-    m_RF m3 (w_clk, P1_ir[19:15], P1_ir[24:20], w_r1, w_r2, P1_ir[11:7], !w_s & !w_b, w_rt);
+    m_RF m3 (w_clk, P1_ir[19:15], P1_ir[24:20], w_r1, w_r2, P1_ir[11:7], !w_s & !w_b & P1_v, w_rt);
     assign w_s2 = (!w_r & !w_b) ? w_imm : w_r2;
     assign w_tcp = P1_pc + w_imm;
 
@@ -42,7 +45,7 @@ module m_proc(w_clk);
     m_alu m5 (w_r1, w_s2, w_alu, w_tkn);
 
     //MA
-    m_am_dmem m4 (w_clk, w_alu, w_s, w_r2, w_ldd);
+    m_am_dmem m4 (w_clk, w_alu, w_s & P1_v, w_r2, w_ldd);
 
     //WB
     assign w_rt = (w_ld) ? w_ldd : w_alu;
